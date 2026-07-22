@@ -1,54 +1,30 @@
 # Security Policy
 
-## Intended use
+## What fastbrute is for
 
-fastbrute is a security-research and password-auditing tool. It recovers the
-5-character secret in the hashcat mode-4010 construction
-`md5(challenge + hex(md5(challenge + secret)))`. It is intended for use only
-against systems, hashes, and data you own or are explicitly authorized to test
-(CTF challenges, your own credentials, sanctioned penetration tests, and
-academic or defensive research). Using it against hashes or systems you do not
-own or lack permission to test may be illegal. You are responsible for how you
-use it.
+fastbrute is a tool for security research and password auditing. It recovers the 5 character secret in the hashcat mode 4010 hash, `md5(challenge + hex(md5(challenge + secret)))`. Only use it against systems, hashes, and data that you own or are clearly allowed to test. That includes CTF challenges, your own credentials, penetration tests you were hired to run, and academic or defensive research. Using it against hashes or systems you do not own or lack permission to test may be illegal, and the responsibility for that sits with you.
 
 ## Scope
 
-fastbrute is an offline, local tool. It makes no network requests, opens no
-listening sockets, and reads no files beyond what you pass on the command line
-or the Python API. The security-relevant surfaces are:
-
-- The C extension boundary (untrusted argument lengths, thread creation, SIMD
-  buffer bounds).
-- The Odin CLI argument parsing (hex decoding into fixed buffers).
-- Input validation on the public Python helpers.
+fastbrute runs offline and stays local. It makes no network requests, opens no listening sockets, and reads nothing beyond what you pass on the command line or through the Python API. The parts worth thinking about for security are the C extension boundary, where untrusted argument lengths, thread creation, and SIMD buffer bounds all live, the Odin command line parser, which decodes hex into fixed buffers, and the input validation on the public Python helpers.
 
 ## Supported versions
 
-Security fixes target the latest release and the current `main` branch.
+Security fixes target the latest release and the current main branch.
 
 | Version | Supported |
 |---------|-----------|
 | 1.0.x   | Yes       |
-| < 1.0   | No        |
+| older   | No        |
 
 ## Reporting a vulnerability
 
-Please do not open a public issue for a security vulnerability.
+Please do not open a public issue for a security problem.
 
-Report it privately through GitHub Security Advisories: open the repository's
-**Security** tab and choose **Report a vulnerability**
-(<https://github.com/TajuC/fastbrute/security/advisories/new>).
+Report it privately through GitHub Security Advisories. Open the Security tab on the repository and choose Report a vulnerability. The direct link is https://github.com/TajuC/fastbrute/security/advisories/new.
 
-Include the affected version or commit, a description of the issue, and a minimal
-reproduction if you have one. You can expect an initial response within a few
-days.
+Tell us the affected version or commit, describe the issue, and include a small reproduction if you have one. You can expect a first reply within a few days.
 
 ## Hardening notes
 
-- The native extension performs runtime CPUID dispatch with a scalar fallback;
-  the ISA-specific `group8`/`group16` helpers validate their arguments and refuse
-  to run on unsupported hardware rather than executing an illegal instruction.
-- The Odin build ships with bounds checks disabled for throughput, so its CLI
-  validates argument lengths and hex before decoding into fixed-size buffers.
-- Releases publish a CycloneDX SBOM and `SHA256SUMS`; verify downloads against
-  the checksums.
+The native extension detects the CPU at run time and always keeps a scalar fallback. The ISA specific group8 and group16 helpers check their arguments and refuse to run on hardware that cannot support them, rather than executing an instruction the CPU does not have. The Odin build ships with bounds checks turned off for speed, so its command line validates argument lengths and hex before it decodes anything into a fixed buffer. Every release publishes a CycloneDX SBOM and a SHA256SUMS file, so verify your download against the checksums.

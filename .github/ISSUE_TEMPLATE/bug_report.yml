@@ -6,7 +6,7 @@ body:
     attributes:
       value: |
         Thanks for taking the time to file a bug. For anything with a security
-        impact, use the Security tab instead (see SECURITY.md).
+        impact, use the Security tab instead, as described in SECURITY.md.
   - type: dropdown
     id: backend
     attributes:
@@ -50,7 +50,7 @@ body:
     id: os
     attributes:
       label: OS and CPU
-      description: e.g. Windows 11 / i7-14700HX, or Ubuntu 24.04 / Xeon (AVX-512)
+      description: For example Windows 11 with an i7-14700HX, or Ubuntu 24.04 with a Xeon that has AVX-512
     validations:
       required: true
   - type: input

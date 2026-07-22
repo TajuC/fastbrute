@@ -23,4 +23,4 @@ body:
     id: context
     attributes:
       label: Additional context
-      description: Benchmarks, references, or constraints (portability, ISA, correctness).
+      description: Benchmarks, references, or constraints such as portability, ISA, or correctness.

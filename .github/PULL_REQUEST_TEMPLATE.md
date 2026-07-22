@@ -1,22 +1,22 @@
 ## Summary
 
-<!-- What does this change do, and why? -->
+Explain what this change does and why.
 
 ## Changes
 
-<!-- Bullet the notable changes. -->
+List the notable changes.
 
 ## Testing
 
-- [ ] `python tests/test_correctness.py` passes (native + pure)
+- [ ] `python tests/test_correctness.py` passes for both native and pure Python
 - [ ] `ruff check .` is clean
-- [ ] Odin `./sf test` passes (if `odin/` changed)
-- [ ] SIMD kernel changes keep the `hashlib`-reference tests green on every ISA tier
+- [ ] Odin `./sf test` passes if you touched odin/
+- [ ] SIMD kernel changes keep the hashlib reference tests green on every ISA tier
 
-## Performance (if applicable)
+## Performance
 
-<!-- Machine, ISA tier (FASTBRUTE_ISA), and before/after Mcand/s from bench.py. Note thermal caveats. -->
+If your change affects speed, note the machine, the ISA tier you set through FASTBRUTE_ISA, the before and after numbers from bench.py, and any thermal caveats.
 
 ## Notes
 
-<!-- Tradeoffs, follow-ups, or anything reviewers should know. -->
+Anything else reviewers should know, such as tradeoffs or follow ups.
