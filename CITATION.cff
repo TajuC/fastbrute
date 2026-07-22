@@ -2,9 +2,9 @@ cff-version: 1.2.0
 message: "If you use this software, please cite it using this metadata."
 title: fastbrute
 abstract: >-
-  A throughput-optimized recovery tool for the hashcat mode-4010 construction
-  md5(challenge + hex(md5(challenge + secret))), with pure-Python, C/C++
-  (AVX2/AVX-512, two-way ILP), and Odin backends.
+  A throughput optimized tool that recovers the 5 character secret in the
+  hashcat mode 4010 hash, with pure Python, C and C++ AVX2 and AVX-512, and
+  Odin backends on one shared algorithm.
 type: software
 authors:
   - name: TajuC
