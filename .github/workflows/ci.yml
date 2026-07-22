@@ -37,8 +37,10 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Build native extension
-        run: pip install .
+      - name: Build native extension in place
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+          python setup.py build_ext --inplace
       - name: Run correctness suite
         run: python -B tests/test_correctness.py
 
