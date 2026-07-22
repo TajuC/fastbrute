@@ -1,0 +1,16 @@
+* text=auto eol=lf
+
+*.py text
+*.c text
+*.cpp text
+*.h text
+*.odin text
+*.sh text eol=lf
+*.bat text eol=crlf
+
+*.png binary
+*.ico binary
+*.jpg binary
+*.woff2 binary
+*.pyd binary
+*.so binary

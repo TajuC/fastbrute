@@ -1,0 +1,1 @@
+include fastbrute/_native_src/*.h

@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install ruff
+      - run: ruff check .
+
+  test:
+    name: test (${{ matrix.os }}, py${{ matrix.python-version }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-13]
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Build native extension
+        run: pip install .
+      - name: Run correctness suite
+        run: python -B tests/test_correctness.py
+
+  odin:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Odin
+        run: |
+          set -euo pipefail
+          url=$(curl -fsSL https://api.github.com/repos/odin-lang/Odin/releases/latest \
+            | grep -o 'https://[^"]*odin-linux-amd64[^"]*\.tar\.gz' | head -1)
+          echo "Odin release: $url"
+          curl -fsSL -o odin.tar.gz "$url"
+          mkdir -p odin-dist && tar -xzf odin.tar.gz -C odin-dist
+          odin_bin=$(find "$PWD/odin-dist" -type f -name odin | head -1)
+          chmod +x "$odin_bin"
+          echo "$(dirname "$odin_bin")" >> "$GITHUB_PATH"
+      - name: Build and self-test
+        run: |
+          odin version
+          cd odin
+          odin build . -out:sf -o:aggressive -no-bounds-check -disable-assert -no-type-assert -disable-red-zone -use-single-module -microarch:x86-64-v3
+          ./sf test

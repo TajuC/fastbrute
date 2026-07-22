@@ -1,0 +1,62 @@
+[build-system]
+requires = ["setuptools>=77", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fastbrute"
+version = "1.0.0"
+description = "Fast brute-forcer for md5(challenge + hex(md5(challenge + secret)))"
+readme = "README.md"
+requires-python = ">=3.9"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "TajuC" }]
+keywords = ["md5", "brute-force", "simd", "avx2", "avx512", "hashcat", "security", "password-recovery"]
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Environment :: Console",
+  "Intended Audience :: Information Technology",
+  "Operating System :: POSIX :: Linux",
+  "Operating System :: Microsoft :: Windows",
+  "Operating System :: MacOS",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: C",
+  "Topic :: Security",
+  "Topic :: Security :: Cryptography",
+]
+
+[project.urls]
+Homepage = "https://github.com/TajuC/fastbrute"
+Repository = "https://github.com/TajuC/fastbrute"
+Issues = "https://github.com/TajuC/fastbrute/issues"
+Changelog = "https://github.com/TajuC/fastbrute/blob/main/CHANGELOG.md"
+
+[project.scripts]
+fastbrute = "fastbrute.__main__:main"
+
+[project.optional-dependencies]
+dev = ["ruff", "build", "cibuildwheel"]
+
+[tool.setuptools]
+packages = ["fastbrute"]
+
+[tool.cibuildwheel]
+build = "cp39-* cp310-* cp311-* cp312-* cp313-*"
+skip = "*-musllinux_i686 *_i686 *-win32"
+test-command = "python {project}/tests/test_correctness.py"
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+extend-exclude = ["build"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B"]
+
+[tool.ruff.lint.isort]
+combine-as-imports = true

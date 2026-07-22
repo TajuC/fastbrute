@@ -1,0 +1,64 @@
+name: Bug report
+description: Report incorrect behavior in a backend, the CLI, or the Python API.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to file a bug. For anything with a security
+        impact, use the Security tab instead (see SECURITY.md).
+  - type: dropdown
+    id: backend
+    attributes:
+      label: Backend
+      description: Which backend is affected?
+      options:
+        - Pure Python
+        - C/C++ native extension
+        - Odin CLI
+        - Not sure
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: A clear description of the incorrect behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: Exact commands or a minimal code snippet.
+      render: shell
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: OS and CPU
+      description: e.g. Windows 11 / i7-14700HX, or Ubuntu 24.04 / Xeon (AVX-512)
+    validations:
+      required: true
+  - type: input
+    id: python
+    attributes:
+      label: Python version (if relevant)
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or output
+      render: shell
