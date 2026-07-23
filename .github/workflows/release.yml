@@ -41,11 +41,11 @@ jobs:
 
   github-release:
     needs: [wheels, sdist]
+    if: startsWith(github.ref, 'refs/tags/')
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with:
           path: dist
@@ -57,13 +57,63 @@ jobs:
           output-file: dist/fastbrute.cdx.json
       - name: Checksums
         run: (cd dist && sha256sum * > SHA256SUMS.txt)
-      - name: Publish GitHub release
+      - name: Create release
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh release create "${{ github.ref_name }}" dist/* --generate-notes --verify-tag
 
+  odin-binaries:
+    needs: [github-release]
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            pattern: odin-linux-amd64
+            out: sf
+          - os: windows-latest
+            pattern: odin-windows-amd64
+            out: sf.exe
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up MSVC
+        if: runner.os == 'Windows'
+        uses: ilammy/msvc-dev-cmd@v1
+      - name: Install Odin
+        shell: bash
+        run: |
+          set -euo pipefail
+          url=$(curl -fsSL https://api.github.com/repos/odin-lang/Odin/releases/latest \
+            | grep -o "https://[^\"]*${{ matrix.pattern }}[^\"]*" | head -1)
+          echo "Odin: $url"
+          curl -fsSL -o odin_archive "$url"
+          mkdir -p odin-dist
+          case "$url" in
+            *.tar.gz) tar -xzf odin_archive -C odin-dist ;;
+            *) 7z x -y odin_archive -oodin-dist >/dev/null ;;
+          esac
+          odin_bin=$(find "$PWD/odin-dist" -type f \( -name odin -o -name odin.exe \) | head -1)
+          chmod +x "$odin_bin" || true
+          echo "$(dirname "$odin_bin")" >> "$GITHUB_PATH"
+      - name: Build and upload
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        working-directory: odin
+        run: |
+          set -euo pipefail
+          odin version
+          odin build . -out:${{ matrix.out }} -o:aggressive -no-bounds-check -disable-assert -no-type-assert -disable-red-zone -use-single-module -microarch:x86-64-v3
+          ./${{ matrix.out }} test
+          gh release upload "${{ github.ref_name }}" "${{ matrix.out }}" --clobber
+
   pypi:
     needs: [wheels, sdist]
+    if: ${{ startsWith(github.ref, 'refs/tags/') && vars.PUBLISH_TO_PYPI == 'true' }}
     runs-on: ubuntu-latest
     environment:
       name: pypi
@@ -75,5 +125,5 @@ jobs:
         with:
           path: dist
           merge-multiple: true
-      - name: Publish to PyPI (Trusted Publishing / OIDC)
+      - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1

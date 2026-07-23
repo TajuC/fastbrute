@@ -12,7 +12,7 @@ repository-code: "https://github.com/TajuC/fastbrute"
 url: "https://github.com/TajuC/fastbrute"
 license: MIT
 version: 1.0.0
-date-released: 2026-07-22
+date-released: 2026-07-23
 keywords:
   - md5
   - brute-force
