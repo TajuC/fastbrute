@@ -46,6 +46,9 @@ jobs:
     permissions:
       contents: write
     steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/download-artifact@v4
         with:
           path: dist
@@ -53,14 +56,18 @@ jobs:
       - name: Generate SBOM
         uses: anchore/sbom-action@v0
         with:
+          path: dist
           format: cyclonedx-json
           output-file: dist/fastbrute.cdx.json
       - name: Checksums
-        run: (cd dist && sha256sum * > SHA256SUMS.txt)
+        run: |
+          cd dist
+          sha256sum * > ../sums.txt
+          mv ../sums.txt SHA256SUMS.txt
       - name: Create release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "${{ github.ref_name }}" dist/* --generate-notes --verify-tag
+        run: gh release create "${{ github.ref_name }}" dist/* --generate-notes
 
   odin-binaries:
     needs: [github-release]
